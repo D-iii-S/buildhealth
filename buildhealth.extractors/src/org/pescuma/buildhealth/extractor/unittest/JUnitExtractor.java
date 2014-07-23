@@ -35,7 +35,7 @@ public class JUnitExtractor extends BaseXMLExtractor {
 	protected void extractDocument(String path, Document doc, BuildData data) {
 		checkRoot(doc, path, "testsuite", "testsuites");
 		
-		for (Element suite : findElementsXPath(doc, "//testsuite"))
+		for (Element suite : doc.getDescendants(org.jdom2.filter.Filters.element("testsuite")))
 			extractSuite(path, suite, data);
 	}
 	
