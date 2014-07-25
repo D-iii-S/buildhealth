@@ -291,6 +291,19 @@
 			</compute-tasks>
 		</buildhealth>
 	</target>
+	
+	<target name="health">
+		<taskdef resource="org/pescuma/buildhealth/ant/antlib.xml" classpath="${buildhealth.jar}" />
+
+		<buildhealth home="${reports.dir}/builhealth" report="true" notify="false">
+			<projects-from-eclipse dir="${basedir}/.." />
+			<add-junit>
+				<fileset dir="${basedir}/..">
+					<include name="**/reports/junit/*" />
+				</fileset>
+			</add-junit>
+		</buildhealth>
+	</target>
 
 	<target name="clean" description="Delete all build results">
 		<delete dir="${build.dir}" quiet="true" />
