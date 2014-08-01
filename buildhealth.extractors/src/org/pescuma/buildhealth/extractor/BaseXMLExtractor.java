@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.jdom2.Document;
@@ -13,6 +15,7 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.jdom2.filter.Filters;
+import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
 import org.pescuma.buildhealth.core.BuildData;
 
@@ -81,6 +84,25 @@ public abstract class BaseXMLExtractor extends BaseBuildDataExtractor {
 	
 	public static List<Element> findElementsXPath(Element el, String xpath) {
 		return XPathFactory.instance().compile(xpath, Filters.element()).evaluate(el);
+	}
+	
+	private static Map<String, XPathExpression<Element>> cachedXPaths = new HashMap<String, XPathExpression<Element>>();
+	
+	protected static XPathExpression<Element> getOrCreateXPathExpression(String xpath) {
+		XPathExpression<Element> result = cachedXPaths.get(xpath);
+		if (result != null) {
+			return result;
+		}
+		
+		result = XPathFactory.instance().compile(xpath, Filters.element());
+		cachedXPaths.put(xpath, result);
+		
+		return result;
+	}
+	
+	public static List<Element> findElementsXPathCaching(Document doc, String xpath) {
+		XPathExpression<Element> expr = getOrCreateXPathExpression(xpath);
+		return expr.evaluate(doc);
 	}
 	
 	public static Element findElementXPath(Document doc, String xpath) {
